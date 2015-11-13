@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="py4j-0.8.2.1-src">
+    <CLASSES>
+      <root url="jar:///opt/spark/python/lib/py4j-0.8.2.1-src.zip!/" />
+      <root url="jar:///opt/spark/python/lib/pyspark.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

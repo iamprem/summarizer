@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="pyspark_extra">
+    <CLASSES>
+      <root url="file:///opt/spark/python/pyspark" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
