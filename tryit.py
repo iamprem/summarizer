@@ -13,7 +13,7 @@ from pyspark.mllib.linalg import (Matrix, Matrices, SparseMatrix)
 sc = SparkContext()
 
 # Load documents (one per line).
-documents = sc.textFile("/home/prem/Desktop/temp/test_inputs/file0").map(lambda line: line.split(" "))
+documents = sc.textFile("data/file0").map(lambda line: line.split(" "))
 
 hashingTF = HashingTF()
 tf = hashingTF.transform(documents)
