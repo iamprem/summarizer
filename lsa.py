@@ -67,6 +67,14 @@ U, S, VT = numpy.linalg.svd(tfidfMatrix, full_matrices=0)
 # print S
 # print VT
 
+# Summary words instead of sentences by SVD on tdidfMatrix.T
+# summary = [];
+# for idxs in numpy.argpartition(VT[:20,:], -20, 1)[:,-20:]:
+#     summary = [];
+#     for idx in idxs:
+#         summary.append(rowheader[idx])
+#     print str(summary) + '\n'
+
 # Extracting the key sentences for summary
 # print "Max values\n" + str(numpy.amax(VT,1))
 # print "Index\n" + str(numpy.argmax(VT,1))

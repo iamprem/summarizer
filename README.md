@@ -1,16 +1,19 @@
-# summarizer
+# summarizer - Summarize Product reviews in Amazon.com
 
 
-# Requirements
+## Dependencies
 
 1. NLTK Library
 2. Numpy
 
-Install following dependencies:
+## Installation:
 
-import nltk
-nltk.download()
-Download 'all-corpora'
+### Console
+    
+    import nltk
+    nltk.download()
+    Download 'all-corpora'
 
-Programmatically: 
-python -m nltk.downloader all-corpora
+### Programmatically: 
+    
+    python -m nltk.downloader all-corpora
