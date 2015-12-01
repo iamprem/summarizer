@@ -1,5 +1,4 @@
 import dataprep
-import tfidf2
 import trhelp
 
 __author__ = 'prem'

@@ -67,7 +67,7 @@ def read_reviews(line):
         result.append((sent_id, sent))
     return result
 
-def extract_summary(VT, reviews, columnheader, k = 10, n = 3):
+def extract_sentences(VT, reviews, columnheader, k = 10, n = 3):
     """
     Returns a list of summary from VT matrix
     :param VT: Right Singular Matrix of SVD
@@ -77,7 +77,8 @@ def extract_summary(VT, reviews, columnheader, k = 10, n = 3):
     :param n: no of review per concept
     """
     summary = [];
-    for idxs in numpy.argpartition(VT[:k,:], -n, 1)[:,-n:]:
+    # for idxs in numpy.argpartition(VT[:k,:], -n, 1)[:,-n:]:
+    for idxs in numpy.fliplr(VT[:k,:].argsort()[:,-n:]):
         for idx in idxs:
             summary.append(reviews.lookup(columnheader[idx]))
     return summary
