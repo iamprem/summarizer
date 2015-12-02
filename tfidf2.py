@@ -1,39 +1,24 @@
 __author__ = 'prem'
 
-
 import numpy
 from nltk.stem.porter import PorterStemmer
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.corpus import stopwords
 import re
 
-def read_doc_old(line):
-    """ Read one line from review file and split it into required format"""
-    lmtz = WordNetLemmatizer()
-    docwords = line.split("\t")
-    review_id = docwords[0]
-    wordlist = [];
-    for word in re.findall(r'[a-zA-Z]+', docwords[5]):
-        word = lmtz.lemmatize(word.lower())
-        wordlist.append(word)
-    sw = stopwords.words('english')
-    wordlist = [w for w in wordlist if w not in sw]
-    return (review_id, wordlist)
 
-def term_freq(tuple):
+def term_freq(k, wordlist):
     """
-    takes doc object and computes the term frequency
+    takes review_id and wordlist and computes the term frequency
     """
-    k = tuple[0]
-    wordlist = tuple[1]
     tf = dict()
     for term in wordlist:
         tf[term] = tf.get(term, 0.0) + 1.0
-    return (k, tf)
+    return k, tf
 
-def idf(N, docfreq):
+def idf(n, docfreq):
     """ Compute the IDF """
-    return numpy.log10(numpy.reciprocal(docfreq) * (N))
+    return numpy.log10(numpy.reciprocal(docfreq) * n)
 
 
 def read_doc(line):
@@ -44,7 +29,7 @@ def read_doc(line):
     review = line.split("\t")
     review_id = review[0]
     sentences = review[5].split(".")
-    result = [];
+    result = []
     for idx, sent in enumerate(sentences):
         sent_id = review_id + '_' + str(idx)
         words = re.findall(r'[a-zA-Z]+', sent)
@@ -57,17 +42,17 @@ def read_doc(line):
 
 # This is used to keep the reivew_id and original sentences from reviews
 def read_reviews(line):
-    """ Read one line from review file and split it into enumerated review id and review senctences tuple"""
+    """ Read one line from review file and split it into enumerated review id and review sentences tuple"""
     review = line.split("\t")
     review_id = review[0]
     sentences = review[5].split(".")
-    result = [];
+    result = []
     for idx, sent in enumerate(sentences):
         sent_id = review_id + '_' + str(idx)
         result.append((sent_id, sent))
     return result
 
-def extract_sentences(VT, reviews, columnheader, k = 10, n = 3):
+def extract_sentences(VT, reviews, columnheader, k=10, n=3):
     """
     Returns a list of summary from VT matrix
     :param VT: Right Singular Matrix of SVD
@@ -76,9 +61,16 @@ def extract_sentences(VT, reviews, columnheader, k = 10, n = 3):
     :param k: no of concepts(rows in VT)
     :param n: no of review per concept
     """
-    summary = [];
+    keysentences = []
     # for idxs in numpy.argpartition(VT[:k,:], -n, 1)[:,-n:]:
     for idxs in numpy.fliplr(VT[:k,:].argsort()[:,-n:]):
         for idx in idxs:
-            summary.append(reviews.lookup(columnheader[idx]))
-    return summary
+            keysentences.append(reviews.lookup(columnheader[idx]))
+    return keysentences
+
+def extract_keywords(VT, rowheader, k = 10, n = 5):
+    keywords = []
+    for idxs in numpy.fliplr(VT[:k,:].argsort()[:,-n:]):
+        for idx in idxs:
+            keywords.append(rowheader[idx])
+    return keywords

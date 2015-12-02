@@ -1,18 +1,15 @@
 __author__ = 'prem'
 
-def mapper(line):
-    v_id,v_dict = line[0],line[1]
-    currentrank = v_dict['#currank']
-    del v_dict['#currank']
+def contributions(neigh_dict, rank):
+    """
+    Compute the contribution from a node using it's current rank and its neighbours' weight
+    :param neigh_dict: A dictionary which contains {neighbour_nodes : weights(computed using similarity)}
+    :param rank: current rank of the node
+    :return:list of (node, contribution received) from the parent node for which we runnig this method
+    """
     result = []
-    outweight = sum(v_dict.itervalues())
-    for key, weight in v_dict.iteritems():
-        newrank = (currentrank*weight)/outweight
-        result.append((key, newrank))
+    outweight = sum(neigh_dict.itervalues())
+    for key,weight in neigh_dict.iteritems():
+        contrib = (rank*weight)/outweight
+        result.append((key, contrib))
     return result
-
-
-def update_rank(line, newranks):
-    v_id, v_dict = line[0],line[1]
-    v_dict['#currank'] = newranks[v_id]
-    return (v_id, v_dict)

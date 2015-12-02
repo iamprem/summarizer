@@ -4,54 +4,39 @@ import numpy
 import tfidf2
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print >> sys.stderr, "Usage: lsa <reveiwfile>"
+    if len(sys.argv) != 3:
+        print >> sys.stderr, "Usage: lsa <-s or -w> <reveiwfile>"
+        print >> sys.stderr, "\t<-s or -w> \t- Extract key sentences or Key words(Transpose of TF-IDF to compute)\n" \
+                             "\t<reveiwfile> \t\t- Review file in a specific format(Check README for the format of the file)"
         exit(-1)
     sc = SparkContext(appName= 'LSA')#, pyFiles= ['tfidf2.py', 'trhelp.py'])
-    file = sys.argv[1]
-    # Read the documents, each document is in one single line or input file
-    # documents = sc.textFile("data/reviews/B00HWMPSK6.txt").map(lambda doc: TfIdf.read_document(doc))
-    # documents = sc.textFile("data/reviews/B00HWMPSK6.txt").map(lambda line: tfidf2.read_doc_old(line)) #Takes full review as one sentence
-    documents = sc.textFile(file).flatMap(lambda review: tfidf2.read_doc(review)) #Takes individual sentence from each review
+    file = sys.argv[2]
+    flag = sys.argv[1]
+
+    # Takes individual sentence from each review
+    documents = sc.textFile(file).flatMap(lambda review: tfidf2.read_doc(review))
     reviews = sc.textFile(file).flatMap(lambda review: tfidf2.read_reviews(review))
 
-    tf = documents.map(lambda tuple: tfidf2.term_freq(tuple))
-    # tf = documents.map(lambda doc: TfIdf.term_freq(doc))
+    # Term Frequency
+    tf = documents.map(lambda (k, wordlist): tfidf2.term_freq(k, wordlist))
 
-    # To get the doc ids
-    # doc_ids = documents.map(lambda doc: TfIdf.get_doc_id(doc))
-
-    # To get the vocabulary of the documents
+    # Get the vocabulary of the documents
     vocabulary = tf.map(lambda tuple: tuple[1].keys()).reduce(lambda x,y: x + y)
-    # vocabulary = tf.map(lambda x: x[2]['termfreq'].keys()).reduce(lambda x,y: x + y)
     vocabulary = numpy.unique(vocabulary)
 
-    # def termfreqmatrix(doc):
-    #     return [doc[2]['termfreq'].get(word,0) for word in vocabulary]
     def termfreqmatrix(tfdict):
-        return [tfdict.get(word,0) for word in vocabulary]
-    # def docfreqmatrix(doc):
-    #     return [ 1.0 if (doc[2]['termfreq'].get(word,0) > 0) else 0. for word in vocabulary]
+        return [tfdict.get(word, 0) for word in vocabulary]
     def docfreqmatrix(tfdict):
-        return [ 1.0 if (tfdict.get(word,0) > 0) else 0. for word in vocabulary]
+        return [ 1.0 if (tfdict.get(word, 0) > 0) else 0. for word in vocabulary]
 
     #Create Doc Frequency vector
-    # dfvector = tf.map(lambda doc: docfreqmatrix(doc)).reduce(lambda x,y : numpy.array(x) + numpy.array(y))
-    dfvector = tf.map(lambda tuple: docfreqmatrix(tuple[1])).reduce(lambda x,y : numpy.array(x) + numpy.array(y))
+    dfvector = tf.map(lambda tuple: docfreqmatrix(tuple[1])).reduce(lambda x, y: numpy.array(x) + numpy.array(y))
 
     #Create Term Frequency matrix
-    # tfmatrix = tf.map(lambda doc: termfreqmatrix(doc))
-    tf = tf.map(lambda tuple: (tuple[0], termfreqmatrix(tuple[1]))).sortByKey()
+    tf = tf.map(lambda (rev_id, tfdict): (rev_id, termfreqmatrix(tfdict))).sortByKey()
+    tfmatrix = tf.values()
     columnheader = tf.keys().collect()
     rowheader = vocabulary
-    tfmatrix = tf.values();
-
-
-
-    # print 'Term Freq matrix\n' + str(tfmatrix.collect())
-    # print 'Doc Freq vector\n' + str(dfvector)
-    # print 'Vocabulary - Row Header\n' + str(vocabulary)
-    # print 'Review Ids - Col Header\n' + str(columnheader)
 
     # Preparing the matrices(tfidf from tf matrix and idf vector)
     tfmatrix = numpy.array(numpy.transpose(tfmatrix.collect()))
@@ -60,28 +45,15 @@ if __name__ == "__main__":
     idfvector = numpy.reshape(idfvector, (-1,1))
     tfidfMatrix = tfmatrix * idfvector
 
-    # print 'IDF Vector\n' + str(idfvector)
-    # print 'TFIDF Matrix\n' + str(tfidfMatrix)
-
-    # Singular Value Decomposition on the tfidf matrix
-    U, S, VT = numpy.linalg.svd(tfidfMatrix, full_matrices=0)
-    # print U
-    # print S
-    # print VT
-
-    # Summary words instead of sentences by SVD on tdidfMatrix.T
-    # summary = [];
-    # for idxs in numpy.argpartition(VT[:20,:], -20, 1)[:,-20:]:
-    #     summary = [];
-    #     for idx in idxs:
-    #         summary.append(rowheader[idx])
-    #     print str(summary) + '\n'
-
-    # Extracting the key sentences for summary
-    # print "Max values\n" + str(numpy.amax(VT,1))
-    # print "Index\n" + str(numpy.argmax(VT,1))
-    # print str(LA.norm(VT, axis= 1))
-    # docs = doc_ids.collect();
     reviews.cache()
-    summary = tfidf2.extract_sentences(VT,reviews,columnheader)
-    print summary #Final Summary
+    # Singular Value Decomposition on the tfidf matrix
+    if flag == '-s':
+        # Summary Sentences - Extraction
+        U, S, VT = numpy.linalg.svd(tfidfMatrix, full_matrices=0)
+        summary = tfidf2.extract_sentences(VT,reviews,columnheader)
+        print summary #Final Summary
+    elif flag == '-w':
+        # Summary Keywords - Abstraction
+        U, S, VT = numpy.linalg.svd(tfidfMatrix.T, full_matrices=0)
+        keywords = tfidf2.extract_keywords(VT, rowheader)
+        print keywords

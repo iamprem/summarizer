@@ -5,7 +5,7 @@ from nltk.corpus import stopwords
 
 
 def create_vertices(line):
-    """ Read one line from review file and split it into enumerated review id and review senctences tuple"""
+    """ Read one line from review file and split it into enumerated review id and review sentences tuple"""
     review = line.split("\t")
     review_id = review[0]
     sentences = review[5].split(".")
@@ -19,7 +19,7 @@ def create_vertices(line):
 
 
 def clean_vertex(line):
-    """     """
+    """ Take review id and sentence tuple and clean it to (review_id, word list) """
     rev_id, sent = line[0], line[1]
     lmtz = WordNetLemmatizer()
     sw = stopwords.words('english')
@@ -28,9 +28,15 @@ def clean_vertex(line):
     words = [w for w in words if len(w) > 3]
     return rev_id, words
 
+
 def create_adjlist(vertex, allvertices):
+    """
+    Take a (review_id,sentence) 'RS1' and all other (review_id, sentence) [RS_all] and create adjacency list for 'RS1'
+    by measuring similarity between two 'RS1' and all other reviews
+    Returns review_id, {other_review_ids : similarity_weights}
+    """
     k,v = vertex[0],vertex[1]
-    edgedict = {'#currank' : 0.15}
+    edgedict = {}
     for u in allvertices:
         edge = sim_measure(vertex, u)
         if edge is not None:
@@ -39,9 +45,13 @@ def create_adjlist(vertex, allvertices):
 
 
 def sim_measure(input1, input2):
+    """
+    Measure similarity between two (review_id,words) and returns a value
+    similarity = (count_of_common_words_S1S2)/ (1 + log2(len(S1)) + log2(len(S2)))
+    """
     k1,v1 = input1[0],input1[1]
     k2,v2 = input2[0],input2[1]
-    if k1 != k2:
+    if k1 != k2: #To skip measuring between same sentence
         Wk = len(set(v1).intersection(v2))
         logSlen = np.log2(len(v1)) + np.log2(len(v2))
         simval = Wk/(logSlen + 1)
