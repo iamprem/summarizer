@@ -69,8 +69,10 @@ def extract_sentences(VT, reviews, columnheader, k=10, n=3):
     return keysentences
 
 def extract_keywords(VT, rowheader, k = 10, n = 5):
-    keywords = []
+    concepts = []
     for idxs in numpy.fliplr(VT[:k,:].argsort()[:,-n:]):
+        keywords = []
         for idx in idxs:
             keywords.append(rowheader[idx])
-    return keywords
+        concepts.append(keywords)
+    return concepts

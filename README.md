@@ -17,3 +17,14 @@
 ### Programmatically: 
     
     python -m nltk.downloader all-corpora
+    
+    
+### Execution Instruction
+
+#### Summarization using LSA:
+
+    spark-submit lsa.py -s <inputfile>
+
+#### Summarization using TextRank:
+
+    spark-submit textrank.py <iter-count> <summary-sent-count> <inputfile>

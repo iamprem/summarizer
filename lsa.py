@@ -51,9 +51,11 @@ if __name__ == "__main__":
         # Summary Sentences - Extraction
         U, S, VT = numpy.linalg.svd(tfidfMatrix, full_matrices=0)
         summary = tfidf2.extract_sentences(VT,reviews,columnheader)
-        print summary #Final Summary
+        for i,sent in enumerate(summary):
+            print '[Sentence '+str(i)+'] :\t'+str(sent) #Final Summary
     elif flag == '-w':
         # Summary Keywords - Abstraction
         U, S, VT = numpy.linalg.svd(tfidfMatrix.T, full_matrices=0)
-        keywords = tfidf2.extract_keywords(VT, rowheader)
-        print keywords
+        concepts = tfidf2.extract_keywords(VT, rowheader)
+        for i,concept in enumerate(concepts):
+            print '[Concept '+str(i)+'] :\t'+str(concept)
