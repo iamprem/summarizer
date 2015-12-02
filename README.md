@@ -3,16 +3,16 @@
 
 ## Dependencies
 
-1. NLTK Library
-2. Numpy
+1. Python (version >2.6.6) not tested in 3.x
+2. NLTK Library
+3. Numpy(version >1.4)
 
 ## Installation:
 
 ### Console
     
     import nltk
-    nltk.download()
-    Download 'all-corpora'
+    nltk.download('all-corpora')
 
 ### Programmatically: 
     
