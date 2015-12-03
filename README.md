@@ -12,6 +12,7 @@
  - [Installation](#installation)
  - [Execution Instruction](#execution-instruction)
  - [Source Code](#source-code)
+ - [Reference](#reference)
 
 ## Introduction
 The idea of this project is to build a model for e-commerce data that summarize large amount of customer reviews of a 
@@ -60,44 +61,63 @@ both methods implemented in this project.
 
 ## Summarization Methods
 ### Latent Semantic Analysis
-LSA Disription goes here
+LSA Disription goes here  
+Take the positive and negative reviews based on the ratings and separate them as two sets of data for
+each product. Pre-process the data by tokenizing and removing the stop words, then do the Latent
+Semantic Analysis by doing the following. Compute TF-IDF matrix with words as rows and sentences as
+columns using Spark. After computing the TF-IDF matrix, factorize the matrix by Singular Value
+Decomposition (using numpy, since no python wrapper for MlLib’s implementation) and collect the key
+sentences from the right singular matrix. Collect the top ‘k’ key sentences and add it to the final
+summary of the product.
 ### TextRank
-Textrank Disription goes here
-
+Textrank Disription goes here  
+Construct a Graph with sentences from reviews as vertices and the similarity between the sentences as
+the weight of the edges. Non-overlapping sentences have zero weight on the edge between them and
+highly overlapping sentences have high weights. This resulting graph would be a connected graph.
+Implement the graph based ranking algorithm called TextRank (similar to PageRank and HITS) in Spark
+and compute the final ranks of each sentence. Collect top ‘k’ ranked sentences and add it to the
+summary.
 ##Demos
 
+#### LSA in Action
+![Summarization using LSA](assets/lsa_execution.gif)
 
 
-
-## Installation:
+## Installation
 
 ### Dependencies
 
-1. Python 2.6 or 2.7(not tested in 3.x)
-2. [Install pip](http://pip.readthedocs.org/en/stable/installing/)
-3. Numpy(version >1.4)
-4. NLTK Library
-5. Apache Spark
+* Python 2.6 or 2.7(not tested in 3.x)
+* [Install pip](http://pip.readthedocs.org/en/stable/installing/)
+* Numpy(version >1.4)
+* NLTK Library
+* Apache Spark
 
 #### Install Numpy and NLTK
     sudo pip install -U numpy
     sudo pip install -U nltk
 
 #### Download Stopwords from nltk data source
-     #Pythonic way
+     //Pythonic way
      import nltk
      nltk.download('all-corpora')
             (or)
-     #Command line way       
+     //Command line way       
      python -m nltk.downloader all-corpora
     
     
 ### Execution Instruction
 
-#### Summarization using LSA:
-
+#### Summarization using LSA
     spark-submit lsa.py -s <inputfile>
 
-#### Summarization using TextRank:
-
+#### Summarization using TextRank
     spark-submit textrank.py <iter-count> <summary-sent-count> <inputfile>
+    
+## References
+1. Y. Gong and X. Liu. 2001. Generic text summarization using relevance measure and latent
+semantic analysis. In Proceedings of SIGIR.
+2. R. Mihalcea and P. Tarau. TextRank - bringing order into texts. In Proceedings of the Conference
+on Empirical Methods in Natural Language Processing (EMNLP 2004), Barcelona, Spain, 2004.
+3. G. Erkan and D. R. Radev (2004) "LexRank: Graph-based Lexical Centrality as Salience in Text
+Summarization", Volume 22, pages 457-479
