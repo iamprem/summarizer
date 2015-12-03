@@ -3,6 +3,7 @@
 ## Table of Contents
  - [Introducntion](#introduction)
  - [Dataset](#dataset)
+    - [Data Collection](#data-collection)
     - [Data Preparation](#data-preparation)
  - [Methods](#methods)
     - [Latent Semantic Analysis](#latent-semantic-analysis)
@@ -19,15 +20,22 @@ most important reveiws that many customers complaining or praising about a parti
 the reviews.
 
 ## Dataset
+### Data Collection
 The dataset used for this project is crawled from Amazon.com. The dataset contains products' reviews in separate files
 for each product, each file contains maximum of 1000 reviews. Since the reviews are sorted by ranking, the first thousand
 reviews are more than sufficient for the summarization task. Each review in a file contains `review_id`, `ratings`, 
-`review_title`, `helpful_votes`, `total_votes` and `full_review`. The reviews file is named by the `product_id` and all
-the metadata are stored in a file called `item_info.txt`.
+`review_title`, `helpful_votes`, `total_votes` and `full_review`. The reviews file for a product is named by its 
+`product_id` and all the metadata about the products are stored in a file called `iteminfo.txt`.
 
+**Note:** Data is collected using the [customer-review-crawler](https://github.com/iamprem/customer-review-crawler) which is
+**forked from [maifeng's crawler](https://github.com/maifeng/customer-review-crawler)** written in java. The original
+version was outdated, so i had to rewrite the whole code that are used for data collection for this project. Please see
+the commit history for the changes that I made to the forked version.
+
+![Commit log comparison between maifen and myself(iamprem)](assets/commit_tree.png)
 #### Description of dataset
     
-**product_id.txt**
+**product_id.txt**  -- a file that contains reviews about a product.
 
     review_id       -   Unique id given to a review
     ratings         -   Integer value ranges from 1 to 5, describes rating of the product
@@ -36,11 +44,13 @@ the metadata are stored in a file called `item_info.txt`.
     total_votes     -   Number of people upvoted or downvoted the review
     full_reveiw     -   Full review given by the reviewer
 
-**items_info.txt**
+**itemsinfo.txt**   -- a file that contains all the product metadata
 
     product_id      -   Unique id for a product
     product_name    -   Listed name for the product in Amazon.com
     price           -   Price in US Dollars
+
+### Data Preparation
 
 ## Dependencies
 
