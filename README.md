@@ -51,19 +51,33 @@ the commit history for the changes that I made to the forked version.
     price           -   Price in US Dollars
 
 ### Data Preparation
+#### Key Decisions in Data Preperation
+* Since the summarization task is extractive(not abstractive) from the original review file, only sentences with number 
+of words between 10 and 30 are considered to avoid long story lines written by users in the final summary.
+* Only english alphabets are considered in the summarization process. All special characters and numbers are ignored in 
+both methods implemented in this project.
+* Stopwords in english are ignored and all other words are lemmatized.
 
-## Dependencies
+## Summarization Methods
+### Latent Semantic Analysis
+LSA Disription goes here
+### TextRank
+Textrank Disription goes here
 
-1. Python (version >2.6.6) not tested in 3.x
-2. NLTK Library
-3. Numpy(version >1.4)
+##Demos
+
+
+
 
 ## Installation:
 
-### Console
+### Dependencies
 
-    import nltk
-    nltk.download('all-corpora')
+1. Python 2.6 or 2.7(not tested in 3.x)
+2. Numpy(version >1.4)
+3. NLTK Library  
+        import nltk
+        nltk.download('all-corpora')
 
 ### Programmatically: 
     
