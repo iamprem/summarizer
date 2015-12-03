@@ -32,11 +32,12 @@ def read_doc(line):
     result = []
     for idx, sent in enumerate(sentences):
         sent_id = review_id + '_' + str(idx)
-        words = re.findall(r'[a-zA-Z]+', sent)
-        words = [lmtz.lemmatize(w.lower()) for w in words if w.lower() not in sw]
-        words = [w for w in words if len(w) > 3]
-        if len(words) < 6: continue
-        result.append((sent_id, words))
+        sent_len = len(sent.split(" "))
+        if 10 < sent_len < 30:
+            words = re.findall(r'[a-zA-Z]+', sent)
+            words = [lmtz.lemmatize(w.lower()) for w in words if w.lower() not in sw]
+            words = [w for w in words if len(w) > 3]
+            result.append((sent_id, words))
     return result
 
 
@@ -52,7 +53,7 @@ def read_reviews(line):
         result.append((sent_id, sent))
     return result
 
-def extract_sentences(VT, reviews, columnheader, k=10, n=3):
+def extract_sentences(VT, reviews, columnheader, k=10, n=5):
     """
     Returns a list of summary from VT matrix
     :param VT: Right Singular Matrix of SVD
@@ -61,12 +62,14 @@ def extract_sentences(VT, reviews, columnheader, k=10, n=3):
     :param k: no of concepts(rows in VT)
     :param n: no of review per concept
     """
-    keysentences = []
+    concepts = []
     # for idxs in numpy.argpartition(VT[:k,:], -n, 1)[:,-n:]:
     for idxs in numpy.fliplr(VT[:k,:].argsort()[:,-n:]):
+        keysentences = []
         for idx in idxs:
             keysentences.append(reviews.lookup(columnheader[idx]))
-    return keysentences
+        concepts.append(keysentences)
+    return concepts
 
 def extract_keywords(VT, rowheader, k = 10, n = 5):
     concepts = []
