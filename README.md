@@ -74,14 +74,22 @@ Textrank Disription goes here
 ### Dependencies
 
 1. Python 2.6 or 2.7(not tested in 3.x)
-2. Numpy(version >1.4)
-3. NLTK Library  
-        import nltk
-        nltk.download('all-corpora')
+2. [Install pip](http://pip.readthedocs.org/en/stable/installing/)
+3. Numpy(version >1.4)
+4. NLTK Library
+5. Apache Spark
 
-### Programmatically: 
-    
-    python -m nltk.downloader all-corpora
+#### Install Numpy and NLTK
+    sudo pip install -U numpy
+    sudo pip install -U nltk
+
+#### Download Stopwords from nltk data source
+     #Pythonic way
+     import nltk
+     nltk.download('all-corpora')
+            (or)
+     #Command line way       
+     python -m nltk.downloader all-corpora
     
     
 ### Execution Instruction
