@@ -20,47 +20,197 @@
 
     <section class="main-content">
       <h1>
-<a id="summarizer---summarize-product-reviews-in-amazoncom" class="anchor" href="#summarizer---summarize-product-reviews-in-amazoncom" aria-hidden="true"><span class="octicon octicon-link"></span></a>summarizer - Summarize Product reviews in Amazon.com</h1>
+<a id="summarizer---summarize-product-reviews" class="anchor" href="#summarizer---summarize-product-reviews" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summarizer - Summarize Product Reviews</h1>
 
 <h2>
-<a id="dependencies" class="anchor" href="#dependencies" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dependencies</h2>
+<a id="table-of-contents" class="anchor" href="#table-of-contents" aria-hidden="true"><span class="octicon octicon-link"></span></a>Table of Contents</h2>
 
-<ol>
-<li>Python (version &gt;2.6.6) not tested in 3.x</li>
-<li>NLTK Library</li>
-<li>Numpy(version &gt;1.4)</li>
-</ol>
+<ul>
+<li><a href="#introduction">Introducntion</a></li>
+<li>
+<a href="#dataset">Dataset</a>
+
+<ul>
+<li><a href="#data-collection">Data Collection</a></li>
+<li><a href="#data-preparation">Data Preparation</a></li>
+</ul>
+</li>
+<li>
+<a href="#methods">Methods</a>
+
+<ul>
+<li><a href="#latent-semantic-analysis">Latent Semantic Analysis</a></li>
+<li><a href="#textrank">Text Rank</a></li>
+</ul>
+</li>
+<li><a href="#online-demos">Demos</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#execution-instruction">Execution Instruction</a></li>
+<li><a href="#source-code">Source Code</a></li>
+<li><a href="#reference">Reference</a></li>
+</ul>
 
 <h2>
-<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation:</h2>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>The idea of this project is to build a model for e-commerce data that summarize large amount of customer reviews of a 
+product to give an overview about the product. The result of this model can be used to get an overview of what are the 
+most important reveiws that many customers complaining or praising about a particular product without reading all of 
+the reviews.</p>
+
+<h2>
+<a id="dataset" class="anchor" href="#dataset" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dataset</h2>
 
 <h3>
-<a id="console" class="anchor" href="#console" aria-hidden="true"><span class="octicon octicon-link"></span></a>Console</h3>
+<a id="data-collection" class="anchor" href="#data-collection" aria-hidden="true"><span class="octicon octicon-link"></span></a>Data Collection</h3>
 
-<pre><code>import nltk
-nltk.download('all-corpora')
+<p>The dataset used for this project is crawled from Amazon.com. The dataset contains products' reviews in separate files
+for each product, each file contains maximum of 1000 reviews. Since the reviews are sorted by ranking, the first thousand
+reviews are more than sufficient for the summarization task. Each review in a file contains <code>review_id</code>, <code>ratings</code>, 
+<code>review_title</code>, <code>helpful_votes</code>, <code>total_votes</code> and <code>full_review</code>. The reviews file for a product is named by its 
+<code>product_id</code> and all the metadata about the products are stored in a file called <code>iteminfo.txt</code>.</p>
+
+<p><strong>Note:</strong> Data is collected using the <a href="https://github.com/iamprem/customer-review-crawler">customer-review-crawler</a> which is
+<strong>forked from <a href="https://github.com/maifeng/customer-review-crawler">maifeng's crawler</a></strong> written in java. The original
+version was outdated, so i had to rewrite the whole code that are used for data collection for this project. Please see
+the commit history for the changes that I made to the forked version.</p>
+
+<p><img src="assets/commit_tree.png" alt="Commit log comparison between maifen and myself(iamprem)"></p>
+
+<h4>
+<a id="description-of-dataset" class="anchor" href="#description-of-dataset" aria-hidden="true"><span class="octicon octicon-link"></span></a>Description of dataset</h4>
+
+<p><strong>product_id.txt</strong>  -- a file that contains reviews about a product.</p>
+
+<pre><code>review_id       -   Unique id given to a review
+ratings         -   Integer value ranges from 1 to 5, describes rating of the product
+review_title    -   Punch line given by the reviewer for their review
+helpful_votes   -   Number of people found the review was helpful
+total_votes     -   Number of people upvoted or downvoted the review
+full_reveiw     -   Full review given by the reviewer
+</code></pre>
+
+<p><strong>itemsinfo.txt</strong>   -- a file that contains all the product metadata</p>
+
+<pre><code>product_id      -   Unique id for a product
+product_name    -   Listed name for the product in Amazon.com
+price           -   Price in US Dollars
 </code></pre>
 
 <h3>
-<a id="programmatically" class="anchor" href="#programmatically" aria-hidden="true"><span class="octicon octicon-link"></span></a>Programmatically:</h3>
+<a id="data-preparation" class="anchor" href="#data-preparation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Data Preparation</h3>
 
-<pre><code>python -m nltk.downloader all-corpora
+<h4>
+<a id="key-decisions-in-data-preperation" class="anchor" href="#key-decisions-in-data-preperation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Key Decisions in Data Preperation</h4>
+
+<ul>
+<li>Since the summarization task is extractive(not abstractive) from the original review file, only sentences with number 
+of words between 10 and 30 are considered to avoid long story lines written by users in the final summary.</li>
+<li>Only english alphabets are considered in the summarization process. All special characters and numbers are ignored in 
+both methods implemented in this project.</li>
+<li>Stopwords in english are ignored and all other words are lemmatized.</li>
+</ul>
+
+<h2>
+<a id="summarization-methods" class="anchor" href="#summarization-methods" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summarization Methods</h2>
+
+<h3>
+<a id="latent-semantic-analysis" class="anchor" href="#latent-semantic-analysis" aria-hidden="true"><span class="octicon octicon-link"></span></a>Latent Semantic Analysis</h3>
+
+<p>LSA Disription goes here<br>
+Take the positive and negative reviews based on the ratings and separate them as two sets of data for
+each product. Pre-process the data by tokenizing and removing the stop words, then do the Latent
+Semantic Analysis by doing the following. Compute TF-IDF matrix with words as rows and sentences as
+columns using Spark. After computing the TF-IDF matrix, factorize the matrix by Singular Value
+Decomposition (using numpy, since no python wrapper for MlLib’s implementation) and collect the key
+sentences from the right singular matrix. Collect the top ‘k’ key sentences and add it to the final
+summary of the product.</p>
+
+<h3>
+<a id="textrank" class="anchor" href="#textrank" aria-hidden="true"><span class="octicon octicon-link"></span></a>TextRank</h3>
+
+<p>Textrank Disription goes here<br>
+Construct a Graph with sentences from reviews as vertices and the similarity between the sentences as
+the weight of the edges. Non-overlapping sentences have zero weight on the edge between them and
+highly overlapping sentences have high weights. This resulting graph would be a connected graph.
+Implement the graph based ranking algorithm called TextRank (similar to PageRank and HITS) in Spark
+and compute the final ranks of each sentence. Collect top ‘k’ ranked sentences and add it to the
+summary.</p>
+
+<h2>
+<a id="demos" class="anchor" href="#demos" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demos</h2>
+
+<h4>
+<a id="lsa-in-action" class="anchor" href="#lsa-in-action" aria-hidden="true"><span class="octicon octicon-link"></span></a>LSA in Action</h4>
+
+<p>Summarization using Latent Semantic Analysis is shown below. Here for simplicity only two concepts are
+selected and in each concept five sentences are extracted. <strong>Note the similarity between sentences in each
+concept.</strong>
+<img src="assets/lsa_exe.gif" alt="Summarization using LSA"></p>
+
+<h4>
+<a id="textrank-in-action" class="anchor" href="#textrank-in-action" aria-hidden="true"><span class="octicon octicon-link"></span></a>TextRank in Action</h4>
+
+<p><img src="assets/tr_exe.gif" alt="Summary sentences using TextRank"></p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<h3>
+<a id="dependencies" class="anchor" href="#dependencies" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dependencies</h3>
+
+<ul>
+<li>Python 2.6 or 2.7(not tested in 3.x)</li>
+<li><a href="http://pip.readthedocs.org/en/stable/installing/">Install pip</a></li>
+<li>Numpy(version &gt;1.4)</li>
+<li>NLTK Library</li>
+<li>Apache Spark</li>
+</ul>
+
+<h4>
+<a id="install-numpy-and-nltk" class="anchor" href="#install-numpy-and-nltk" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install Numpy and NLTK</h4>
+
+<pre><code>sudo pip install -U numpy
+sudo pip install -U nltk
+</code></pre>
+
+<h4>
+<a id="download-stopwords-from-nltk-data-source" class="anchor" href="#download-stopwords-from-nltk-data-source" aria-hidden="true"><span class="octicon octicon-link"></span></a>Download Stopwords from nltk data source</h4>
+
+<pre><code> //Pythonic way
+ import nltk
+ nltk.download('all-corpora')
+        (or)
+ //Command line way       
+ python -m nltk.downloader all-corpora
 </code></pre>
 
 <h3>
 <a id="execution-instruction" class="anchor" href="#execution-instruction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Execution Instruction</h3>
 
 <h4>
-<a id="summarization-using-lsa" class="anchor" href="#summarization-using-lsa" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summarization using LSA:</h4>
+<a id="summarization-using-lsa" class="anchor" href="#summarization-using-lsa" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summarization using LSA</h4>
 
 <pre><code>spark-submit lsa.py -s &lt;inputfile&gt;
 </code></pre>
 
 <h4>
-<a id="summarization-using-textrank" class="anchor" href="#summarization-using-textrank" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summarization using TextRank:</h4>
+<a id="summarization-using-textrank" class="anchor" href="#summarization-using-textrank" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summarization using TextRank</h4>
 
 <pre><code>spark-submit textrank.py &lt;iter-count&gt; &lt;summary-sent-count&gt; &lt;inputfile&gt;
 </code></pre>
+
+<h2>
+<a id="references" class="anchor" href="#references" aria-hidden="true"><span class="octicon octicon-link"></span></a>References</h2>
+
+<ol>
+<li>Y. Gong and X. Liu. 2001. Generic text summarization using relevance measure and latent
+semantic analysis. In Proceedings of SIGIR.</li>
+<li>R. Mihalcea and P. Tarau. TextRank - bringing order into texts. In Proceedings of the Conference
+on Empirical Methods in Natural Language Processing (EMNLP 2004), Barcelona, Spain, 2004.</li>
+<li>G. Erkan and D. R. Radev (2004) "LexRank: Graph-based Lexical Centrality as Salience in Text
+Summarization", Volume 22, pages 457-479</li>
+</ol>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/iamprem/summarizer">Summarizer</a> is maintained by <a href="https://github.com/iamprem">iamprem</a>.</span>
