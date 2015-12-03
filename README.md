@@ -33,7 +33,7 @@ reviews are more than sufficient for the summarization task. Each review in a fi
 version was outdated, so i had to rewrite the whole code that are used for data collection for this project. Please see
 the commit history for the changes that I made to the forked version.
 
-![Commit log comparison between maifen and myself(iamprem)](assets/commit_tree.png)
+![Commit log comparison between maifen and myself(iamprem)](https://raw.githubusercontent.com/iamprem/temp/master/assets/commit_tree.png)
 #### Description of dataset
     
 **product_id.txt**  -- a file that contains reviews about a product.
@@ -83,10 +83,10 @@ summary.
 Summarization using Latent Semantic Analysis is shown below. Here for simplicity only two concepts are
 selected and in each concept five sentences are extracted. **Note the similarity between sentences in each
 concept.**
-![Summarization using LSA](assets/lsa_exe.gif)
+![Summarization using LSA](https://raw.githubusercontent.com/iamprem/temp/master/assets/lsa_exe.gif)
 
 #### TextRank in Action
-![Summary sentences using TextRank](assets/tr_exe.gif)
+![Summary sentences using TextRank](https://raw.githubusercontent.com/iamprem/temp/master/assets/tr_exe.gif)
 ## Installation
 
 ### Dependencies
