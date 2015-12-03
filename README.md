@@ -80,9 +80,13 @@ summary.
 ##Demos
 
 #### LSA in Action
-![Summarization using LSA](assets/lsa_execution.gif)
+Summarization using Latent Semantic Analysis is shown below. Here for simplicity only two concepts are
+selected and in each concept five sentences are extracted. **Note the similarity between sentences in each
+concept.**
+![Summarization using LSA](assets/lsa_exe.gif)
 
-
+#### TextRank in Action
+![Summary sentences using TextRank](assets/tr_exe.gif)
 ## Installation
 
 ### Dependencies
