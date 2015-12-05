@@ -86,8 +86,8 @@ following the key decisions described above)
 * Process(remove stopwords, lemmatize) the sentenceRDD to extract only words that are meaningful. Here words with less
 than four letters are ignored with a heuristic that more meaning can be captured by longer words than shorter words.
 * The processed wordlist from the sentenceRDD replaces its sentences with a list of words to form wordlistRDD. So the 
-id(key) of each sentence is preserved, which is used to finally extract the summary sentences after performing the
-summarization techniques.
+id(key) of each sentence is preserved to its corresponding wordlist, which is used to finally extract the summary 
+sentences after performing the summarization techniques.
 
 
 
@@ -96,12 +96,49 @@ summarization techniques.
 
 ### Latent Semantic Analysis
 
-After preparing the data as mentioned above,
-Semantic Analysis by doing the following. Compute TF-IDF matrix with words as rows and sentences as
-columns using Spark. After computing the TF-IDF matrix, factorize the matrix by Singular Value
-Decomposition (using numpy, since no python wrapper for MlLib’s implementation) and collect the key
-sentences from the right singular matrix. Collect the top ‘k’ key sentences and add it to the final
-summary of the product.
+After preparing the data as mentioned above, full `vocabulary/rowheader` of the review file is obtained from the 
+`values()` of wordlistRDD and sentence_ids/columnheader from the `keys()` of wordlistRDD. From the wordlist obtained by data
+preparation, term-frequency vector for each selected sentence is computed and then using the term-frequency matrix
+the document-frequency(here document means sentences in the review file) vector is computed. Inverse Document Frequency
+is then computed using the document-frequency vector and total number of sentences. TF-IDF matrix with words as rows and
+sentences as columns. 
+
+After computing the TF-IDF matrix, factorized the matrix by Singular Value Decomposition (using numpy) and collected the key
+sentences from the right singular matrix. The matrix decomposition resulted three matrices U, S and V-Transpose. U is the left
+singular vector matrix, S is the diagonal matrix of non-negative singular values sorted in descending order and V-Transpose is the
+right singular vector matrix. Latent Semantic Analysis summarization method chooses k concepts from the right singular matrix
+and in each concept(row vector in V-Transpose) selects the sentence with largest value to the summary. This method is 
+suitable when we know the number of topics/concepts in a given corpus of documents. ***But in the review summarization task,
+since there is no predefined set of concepts, i've chosen 10 concepts with 5 sentences each. So the concepts 
+captured by LSA in final review can be interpreted clearly.***
+
+##### Sample Output by LSA Summarizer for "Samsung Galaxy Note Pro 12.2"
+
+    Concept 1
+    [Sentence 1] :	[u" Combined with any Bluetooth Keyboard and the Hancom Officer suite (it's free!), it's almost exactly like your Microsoft Office at home"]
+    [Sentence 2] :	[u'2 is first and foremost a pseudo-laptop replacement computer, especially when you have specialized office apps like the (full version of) Hancom Office']
+    [Sentence 3] :	[u' - The Hancom office app is only a viewer, but you can use OfficeSuite, WPS Office or QuickOfficeHD to have a near 95% Microsoft compatible experience']
+    [Sentence 4] :	[u' The Hancom office is very useful, I now have no need to get Microsoft Office 2013 for my laptop']
+    [Sentence 5] :	[u' Samsungs free office suite is just like working with Microsoft office']
+    
+    Concept 2
+    [Sentence 1] :	[u' Pros: Large screen Fast computing processing speeds / large amount of Ram Beautiful looking screen with large resolution Easy setup with secure packaging Highly customizable with smooth operation']
+    [Sentence 2] :	[u'2: 1) the large screen allows for effective split window use; 2) the large screen is great for reading technical textbooks']
+    [Sentence 3] :	[u" Apps do not transition well from full screen to partial screen, and most are nearly useless in quarter-screen, so don't put too much faith in that multi-app functionality"]
+    [Sentence 4] :	[u" The stylus is incredibly useful to write notes and the fact that the screen is so large really makes you feel like you're just using an actual notepad"]
+    [Sentence 5] :	[u' Second, the on-screen keyboard keeps popping up! The BT keyboard is connected and working, but any pen-clicking on the screen slides up the on-screen keyboard as well']
+    
+    Concept 3
+    [Sentence 1] :	[u' Battery life: At first average battery life between charges was about four hours']
+    [Sentence 2] :	[u" I've read however that those using the Logitech Bluetooth keyboard are now experiencing issues with their Logitech keyboards after updating to lollipop"]
+    [Sentence 3] :	[u' Second, the on-screen keyboard keeps popping up! The BT keyboard is connected and working, but any pen-clicking on the screen slides up the on-screen keyboard as well']
+    [Sentence 4] :	[u' Now my Logitech Pro keyboard no longer works and the Samsung screen keyboard works randomly']
+    [Sentence 5] :	[u" - Battery life and charging times could be better if you're used to an older Transformer that had a battery in the keyboard dock"]
+    
+**Note:** Few concepts showed redundant information, so selected only three concepts from the full result to show a sample 
+of the output
+    
+
 ### TextRank
 Textrank Disription goes here  
 Construct a Graph with sentences from reviews as vertices and the similarity between the sentences as
