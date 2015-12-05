@@ -121,7 +121,7 @@ from the right singular vector matrix. Here,
 2. Concept 2 describes about the screen of the tablet
 3. Concept 3 Captured sentences that described the keyboard and battery performance
 
-```
+
     Concept 1
     [Sentence 1] :	[u" Combined with any Bluetooth Keyboard and the Hancom Officer suite (it's free!), it's almost exactly like your Microsoft Office at home"]
     [Sentence 2] :	[u'2 is first and foremost a pseudo-laptop replacement computer, especially when you have specialized office apps like the (full version of) Hancom Office']
@@ -142,7 +142,6 @@ from the right singular vector matrix. Here,
     [Sentence 3] :	[u' Second, the on-screen keyboard keeps popping up! The BT keyboard is connected and working, but any pen-clicking on the screen slides up the on-screen keyboard as well']
     [Sentence 4] :	[u' Now my Logitech Pro keyboard no longer works and the Samsung screen keyboard works randomly']
     [Sentence 5] :	[u" - Battery life and charging times could be better if you're used to an older Transformer that had a battery in the keyboard dock"]    
-```
 **Note:** Few concepts showed redundant information, so selected only three concepts from the full result to show a sample 
 of the output
     
