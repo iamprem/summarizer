@@ -153,8 +153,9 @@ instruction below to choose between words/sentences while executing the program.
 
 TextRank is a graph based summarization algorithm and this starts with the same data preparation steps as LSA till 
 producing the wordlistRDD. Here each wordlist represent a vertex of the graph. To add edges to the vertices, i've 
-created graphRDD which takes wordlistRDD as input and creates adjacency list of the vertex based on the similarity 
-between two sentences(vertices). If two vertices don't share any words then there won't be an edge between them and if 
+created graphRDD which takes wordlist(vertex) and all other vertices(all sentences from wordlistRDD) as input and creates 
+adjacency list of the vertex based on the similarity between itself to all other sentences(vertices). If two vertices don't share any 
+words then there won't be an edge between them and if 
 they share some common words, then the edge between them will have a weight equivalent to the similarity between them.
 The similarity score is computed by the below formula.  
 ![similarity formula](https://raw.githubusercontent.com/iamprem/temp/master/assets/sim_form.png)  
