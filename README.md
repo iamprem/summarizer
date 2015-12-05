@@ -146,25 +146,62 @@ from the right singular vector matrix. Here,
 **Note:** Few concepts showed redundant information, so selected only three concepts from the full result to show a sample 
 of the output
     
+We can use LSA to get the important words instead of sentences by doing SVD on transpose matrix of tf-idf matrix. I've added
+instruction below to choose between words/sentences while executing the program.
 
 ### TextRank
-Textrank Disription goes here  
-Construct a Graph with sentences from reviews as vertices and the similarity between the sentences as
-the weight of the edges. Non-overlapping sentences have zero weight on the edge between them and
-highly overlapping sentences have high weights. This resulting graph would be a connected graph.
-Implement the graph based ranking algorithm called TextRank (similar to PageRank and HITS) in Spark
-and compute the final ranks of each sentence. Collect top ‘k’ ranked sentences and add it to the
-summary.
+
+TextRank is a graph based summarization algorithm and this starts with the same data preparation steps as LSA till 
+producing the wordlistRDD. Here each wordlist represent a vertex of the graph. To add edges to the vertices, i've 
+created graphRDD which takes wordlistRDD as input and creates adjacency list of the vertex based on the similarity 
+between two sentences(vertices). If two vertices don't share any words then there won't be an edge between them and if 
+they share some common words, then the edge between them will have a weight equivalent to the similarity between them.
+The similarity score is computed by the below formula.  
+![similarity formula](https://raw.githubusercontent.com/iamprem/temp/master/assets/sim_form.png)  
+**Note: I've added a smoothing factor of 1 in the denominator to avoid divide by zero case.**
+
+After constructing the graph, implemented the TextRank(modified version of PageRank) iterative algorithm to compute
+the rank of each vertex. The top ‘k’ ranked sentences are then selected and added to the final summary of the reviews.
+The TextRank algorithm is formulated from PageRank and the mathematical expression is
+![TextRank Formula](https://raw.githubusercontent.com/iamprem/temp/master/assets/tr_form.png)  
+*Image Source: TextRank: Bringing Order into Texts by Rada Mihalcea and Paul Tarau*
+
+#### Sample Output of TextRank
+    
+    Example 1: Samsung Galaxy Note Pro 12.2
+    Rank: 2.3602	Sentence : [u' I like Android very much, but if Apple ever makes a tablet this size with a retina+ screen']
+    Rank: 2.3573	Sentence : [u' Samsung makes an S Action mouse especially for the Note Pro and Tab Pro line of tablets and it works very well']
+    Rank: 2.26      Sentence : [u'only had the tablet an hour now but I love the full screen keyboard and the new tile system is fantastic, I really like it']
+    Rank: 2.2016	Sentence : [u' As with all Galaxy Note products, this tablet comes with the S-Pen which works very well']
+    Rank: 2.199		Sentence : [u' I\'m tired of "sacrificing" size with a tablet and it\'s time to be \'normal\'! This is where the Samsung Galaxy Note Pro (SGNP) 12']
+    Rank: 2.1748	Sentence : [u" IOS has nothing on android and the iPad is a play toy compared to samsung's line of note tablets, the note 8, the note 10"]
+    Rank: 2.1524	Sentence : [u" I really liked the Yoga 2 laptops except the windows tablet apps don't handle the resolution well and the screen is too narrow in portrait mode"]
+    Rank: 2.1514	Sentence : [u" I've been waiting a long time for a tablet like this to be released: a large screen, expandable memory and the freedom of Android"]
+    Rank: 2.1503	Sentence : [u'I love this tablet! It has a huge screen and I am able to use it like a laptop']
+    Rank: 2.1501	Sentence : [u' On a positive note, it functions well as a keyboard, it matches the tablet nice and battery life is very good']
+    
+    Example 2: Fire HD 8, 8" HD Display, Wi-Fi, 8 GB, Black
+    Rank: 2.4671	Sentence : [u" I also purchased to kindle fire children's tablets, I think they look good , case seems strong and great warranty"]
+    Rank: 2.4379	Sentence : [u" It's about TIME Amazon did this with their Kindle Fire devices! NOT SO GOOD: - Mediatek processor"]
+    Rank: 2.3362	Sentence : [u'I really wanted to like this tablet since my very old Kindle Fire needed replacing']
+    Rank: 2.3126	Sentence : [u' You buy a Kindle Fire for Amazon content & their ecosystem, and this is a darn good device for the price']
+    Rank: 2.2486	Sentence : [u' Had Amazon allowed the Google Play services to be integrated better, this tablet would have been a great device, especially for its low price tag']
+    Rank: 2.2433	Sentence : [u' I like having a tablet dedicated to the Amazon ecosystem, so I think I would stick with a Fire tablet vs']
+    Rank: 2.2399	Sentence : [u"I like everything about the Fire HD8, except you can't put apps from other than Amazon, on the Kindle, especially one called Xfinity Connect,which allows me to"]
+    Rank: 2.2325	Sentence : [u' Amazon owes it too the loyal Fire following that purchases apps and books constantly to make a good tablet with which to enjoy those apps and books']
+    Rank: 2.1829	Sentence : [u' I especially like the light weight of the new Kindle Fire as it is easy to hold when reading e-books or websites']
+    Rank: 2.0988	Sentence : [u' I am an Amazon user and fan but I was sadly let down with this device and would gladly purchase a quality tablet like my old HDX']
+
 ##Demos
 
 #### LSA in Action
 Summarization using Latent Semantic Analysis is shown below. Here for simplicity only two concepts are
 selected and in each concept five sentences are extracted. **Note the similarity between sentences in each
 concept.**
-![Summarization using LSA](https://raw.githubusercontent.com/iamprem/temp/master/assets/lsa_exe.gif)
+![Summarization using LSA](https://raw.githubusercontent.com/iamprem/temp/master/assets/lsa_exe.gif)  
 
 #### TextRank in Action
-![Summary sentences using TextRank](https://raw.githubusercontent.com/iamprem/temp/master/assets/tr_exe.gif)
+![Summary sentences using TextRank](https://raw.githubusercontent.com/iamprem/temp/master/assets/tr_exe.gif)  
 ## Installation
 
 ### Dependencies
