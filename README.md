@@ -211,9 +211,12 @@ concept.**
 with very few words in the first concept which didn't give any meaning at all.
 * Then i picked sentences with words more than 10 words, this resulted with same long sentences appearing in multiple 
 concepts(or rows) because longer sentences have more words and that can represent multiple concepts.
+* Negative reviews are mostly user specific, so they didn't show up much in the top concepts. Also the negative reviews
+are comparatively very less in number than positive reviews.
 * Text rank is pretty stable in this and always prefers sentences with more words and have more edges.
 * TextRank and LSA are not so good choice for text summarization, but these can be used as a step 1 for summarization 
 task.
+
 ## Installation
 
 ### Dependencies
