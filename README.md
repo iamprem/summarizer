@@ -8,7 +8,7 @@
  - [Methods](#methods)
     - [Latent Semantic Analysis](#latent-semantic-analysis)
     - [Text Rank](#textrank)
- - [Demos](#online-demos)
+ - [Demo](#demo)
  - [Installation](#installation)
  - [Execution Instruction](#execution-instruction)
  - [Source Code](#source-code)
@@ -17,8 +17,10 @@
 ## Introduction
 The idea of this project is to build a model for e-commerce data that summarize large amount of customer reviews of a 
 product to give an overview about the product. The result of this model can be used to get an overview of what are the 
-most important reveiws that many customers complaining or praising about a particular product without reading all of 
-the reviews.
+most important reviews that many customers complaining or praising about a particular product without reading all of 
+the reviews. The main tasks involved in this project are data collection, data cleaning, implementation of two 
+summarization algorithms and getting the final summary in Apache Spark.
+
 
 ## Dataset
 ### Data Collection
@@ -41,7 +43,7 @@ the [commit history](https://github.com/iamprem/customer-review-crawler/commits/
     review_id       -   Unique id given to a review
     ratings         -   Integer value ranges from 1 to 5, describes rating of the product
     review_title    -   Punch line given by the reviewer for their review
-    helpful_votes   -   Number of people found the review was helpful
+    helpful_votes   -   Number of people found the review was helpful(upvoted)
     total_votes     -   Number of people upvoted or downvoted the review
     full_reveiw     -   Full review given by the reviewer
 
@@ -97,19 +99,19 @@ sentences after performing the summarization techniques.
 ### Latent Semantic Analysis
 
 After preparing the data as mentioned above, full `vocabulary/rowheader` of the review file is obtained from the 
-`values()` of wordlistRDD and sentence_ids/columnheader from the `keys()` of wordlistRDD. From the wordlist obtained by data
+`values()` of wordlistRDD and `sentence_ids/columnheader` from the `keys()` of wordlistRDD. From the wordlist obtained by data
 preparation, term-frequency vector for each selected sentence is computed and then using the term-frequency matrix
-the document-frequency(here document means sentences in the review file) vector is computed. Inverse Document Frequency
-is then computed using the document-frequency vector and total number of sentences. TF-IDF matrix with words as rows and
-sentences as columns. 
+the document-frequency( *here document means sentences in the review file*) vector is computed. Inverse Document Frequency
+is then computed using the document-frequency vector and total number of sentences. TF-IDF matrix is computed by multiplying 
+TF matrix with IDF vector using numpy. Here the rows and columns of the TF-IDF matrix are words and sentences respectively.
 
-After computing the TF-IDF matrix, factorized the matrix by Singular Value Decomposition (using numpy) and collected the key
+After computing the TF-IDF matrix, factorized the matrix by ***Singular Value Decomposition*** (using numpy) and collected the key
 sentences from the right singular matrix. The matrix decomposition resulted three matrices U, S and V-Transpose. U is the left
 singular vector matrix, S is the diagonal matrix of non-negative singular values sorted in descending order and V-Transpose is the
 right singular vector matrix. Latent Semantic Analysis summarization method chooses k concepts from the right singular matrix
 and in each concept(row vector in V-Transpose) selects the sentence with largest value to the summary. This method is 
 suitable when we know the number of topics/concepts in a given corpus of documents. ***But in the review summarization task,
-since there is no predefined set of concepts, i've chosen 10 concepts with 5 sentences each. So the concepts 
+since there is no predefined set of concepts, i've chosen 10 concepts with top 5 sentences each. So the concepts 
 captured by LSA in final review can be interpreted clearly.***
 
 #### Sample Output by LSA Summarizer for "Samsung Galaxy Note Pro 12.2"
@@ -146,20 +148,19 @@ from the right singular vector matrix. Here,
 **Note:** Few concepts showed redundant information, so selected only three concepts from the full result to show a sample 
 of the output
     
-We can use LSA to get the important words instead of sentences by doing SVD on transpose matrix of tf-idf matrix. I've added
-instruction below to choose between words/sentences while executing the program.
+**We can use LSA to get the important words instead of sentences by doing SVD on transpose matrix of tf-idf matrix. I've added
+instruction below to choose between words/sentences while executing the program.**
 
 ### TextRank
 
-TextRank is a graph based summarization algorithm and this starts with the same data preparation steps as LSA till 
+TextRank is a *graph based summarization algorithm* and this starts with the same data preparation steps as LSA till 
 producing the wordlistRDD. Here each wordlist represent a vertex of the graph. To add edges to the vertices, i've 
 created graphRDD which takes wordlist(vertex) and all other vertices(all sentences from wordlistRDD) as input and creates 
 adjacency list of the vertex based on the similarity between itself to all other sentences(vertices). If two vertices don't share any 
-words then there won't be an edge between them and if 
-they share some common words, then the edge between them will have a weight equivalent to the similarity between them.
-The similarity score is computed by the below formula.  
+words then there won't be an edge between them and if they share some common words, then the edge between them will 
+have a weight equivalent to the similarity between them. *The similarity score is computed by the below formula*.  
 ![similarity formula](https://raw.githubusercontent.com/iamprem/temp/master/assets/sim_form.png)  
-**Note: I've added a smoothing factor of 1 in the denominator to avoid divide by zero case.**
+***Note: In my implementation, I've added a smoothing factor of 1 in the denominator to avoid divide by zero case.***
 
 After constructing the graph, implemented the TextRank(modified version of PageRank) iterative algorithm to compute
 the rank of each vertex. The top ‘k’ ranked sentences are then selected and added to the final summary of the reviews.
@@ -193,7 +194,7 @@ The TextRank algorithm is formulated from PageRank and the mathematical expressi
     Rank: 2.1829	Sentence : [u' I especially like the light weight of the new Kindle Fire as it is easy to hold when reading e-books or websites']
     Rank: 2.0988	Sentence : [u' I am an Amazon user and fan but I was sadly let down with this device and would gladly purchase a quality tablet like my old HDX']
 
-##Demos
+##Demo
 
 #### LSA in Action
 Summarization using Latent Semantic Analysis is shown below. Here for simplicity only two concepts are
@@ -214,8 +215,11 @@ concept.**
 * Apache Spark
 
 #### Install Numpy and NLTK
-    sudo pip install -U numpy
-    sudo pip install -U nltk
+
+```bash
+sudo pip install -U numpy
+sudo pip install -U nltk
+```
 
 #### Download Stopwords from nltk data source
      //Pythonic way

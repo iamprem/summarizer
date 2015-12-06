@@ -44,8 +44,12 @@ if __name__ == "__main__":
         contrcollection = graph.join(ranks).flatMap(lambda (sent, (neigh_dict, r)): trhelp.contributions(neigh_dict, r))
         ranks = contrcollection.reduceByKey(lambda x,y: x+y).mapValues(lambda rank: 0.15 + 0.85 * rank)
 
+    output = []
     # Print the sentences that have higher rank
     finalrank = ranks.collect()
     result = sorted(finalrank, key=lambda x: x[1], reverse=True)
     for j in range(0, sentcount):
-        print 'Rank: ' + str(round(result[j][1],4)) + '\t\tSentence : ' + str(revsents.lookup(result[j][0]))
+        output.append('Rank: ' + str(round(result[j][1],2)) + '\t\tSentence : ' + str(revsents.lookup(result[j][0])))
+        print 'Rank: ' + str(round(result[j][1],2)) + '\t\tSentence : ' + str(revsents.lookup(result[j][0]))
+
+    sc.parallelize(output).coalesce(1).saveAsTextFile("output-textrank/")

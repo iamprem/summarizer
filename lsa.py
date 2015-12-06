@@ -45,7 +45,7 @@ if __name__ == "__main__":
     idfvector = numpy.array(numpy.transpose(idfvector))
     idfvector = numpy.reshape(idfvector, (-1,1))
     tfidfMatrix = tfmatrix * idfvector
-
+    result = []
     reviews.cache()
     # Singular Value Decomposition on the tfidf matrix
     if flag == '-s':
@@ -54,6 +54,7 @@ if __name__ == "__main__":
         concepts = tfidf2.extract_sentences(VT,reviews,columnheader)
         for i,concept in enumerate(concepts):
             for j,sent in enumerate(concept):
+                result.append('[Concept '+str(i+1)+'][Sentence '+str(j+1)+'] :\t'+str(sent))
                 print '[Concept '+str(i+1)+'][Sentence '+str(j+1)+'] :\t'+str(sent) #Final Summary
             print '\n'
     elif flag == '-w':
@@ -61,4 +62,7 @@ if __name__ == "__main__":
         U, S, VT = numpy.linalg.svd(tfidfMatrix.T, full_matrices=0)
         concepts = tfidf2.extract_keywords(VT, rowheader)
         for i,concept in enumerate(concepts):
+            result.append('[Concept '+str(i+1)+'] :\t'+str(concept))
             print '[Concept '+str(i+1)+'] :\t'+str(concept)
+
+    sc.parallelize(result).coalesce(1).saveAsTextFile("output-lsa/")
