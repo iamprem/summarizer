@@ -1,7 +1,7 @@
 # Summarizer - Summarize Product Reviews
 
 ## Table of Contents
- - [Introducntion](#introduction)
+ - [Introduction](#introduction)
  - [Dataset](#dataset)
     - [Data Collection](#data-collection)
     - [Data Preparation](#data-preparation)
@@ -83,7 +83,7 @@ both methods implemented in this project.
 ### Data Preparation
 
 * A review file of a product is collected into a reviewRDD as key(review_id), value(full_review) pair.
-* Each review in the reviewRDD is comprised of multiple sentences, so each review is further splitted into individual 
+* Each review in the reviewRDD is comprised of multiple sentences, so each review is further split into individual 
 sentences, let's call sentenceRDD. Each sentence is identified by a unique key.(Here few sentences are removed by 
 following the key decisions described above)
 * Process(remove stopwords, lemmatize) the sentenceRDD to extract only words that are meaningful. Here words with less
@@ -91,8 +91,6 @@ than four letters are ignored with a heuristic that more meaning can be captured
 * The processed wordlist from the sentenceRDD replaces its sentences with a list of words to form wordlistRDD. So the 
 id(key) of each sentence is preserved to its corresponding wordlist, which is used to finally extract the summary 
 sentences after performing the summarization techniques.
-
-
 
 
 ## Summarization
@@ -208,7 +206,7 @@ concept.**
 
 ## Observations
 
-* Initially i tried running LSA on all sentences(without filtereing <10 and >30). It surprisingly resulted sentences 
+* Initially i tried running LSA on all sentences(without filtering <10 and >30). It surprisingly resulted sentences 
 with very few words in the first concept which didn't give any meaning at all.
 * Then i picked sentences with words more than 10 words, this resulted with same long sentences appearing in multiple 
 concepts(or rows) because longer sentences have more words and that can represent multiple concepts.
