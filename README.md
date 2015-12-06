@@ -222,13 +222,17 @@ sudo pip install -U nltk
 ```
 
 #### Download Stopwords from nltk data source
-     //Pythonic way
-     import nltk
-     nltk.download('all-corpora')
+
+```python
+ //Pythonic way
+ import nltk
+ nltk.download('all-corpora')
+```
             (or)
-     //Command line way       
-     python -m nltk.downloader all-corpora
-    
+```bash
+ //Command line way       
+ python -m nltk.downloader all-corpora
+```
     
 ### Execution Instruction
 
