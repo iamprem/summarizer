@@ -12,7 +12,7 @@
   <body>
     <section class="page-header">
       <h1 class="project-name">Summarizer</h1>
-      <h2 class="project-tagline">Text Summarization using LSA and TextRank in Apache Spark</h2>
+      <h2 class="project-tagline">Text Summarization using LSA and TextRank in Apache Spark &lt;/h2&gt; &lt;br&gt; &lt;h2&gt; By Prem Kumar </h2>
       <a href="https://github.com/iamprem/summarizer" class="btn">View on GitHub</a>
       <a href="https://github.com/iamprem/summarizer/zipball/master" class="btn">Download .zip</a>
       <a href="https://github.com/iamprem/summarizer/tarball/master" class="btn">Download .tar.gz</a>
@@ -43,7 +43,8 @@
 <li><a href="#textrank">Text Rank</a></li>
 </ul>
 </li>
-<li><a href="#online-demos">Demos</a></li>
+<li><a href="#demo">Demo</a></li>
+<li><a href="#evaluation">Evaluation</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#execution-instruction">Execution Instruction</a></li>
 <li><a href="#source-code">Source Code</a></li>
@@ -55,8 +56,9 @@
 
 <p>The idea of this project is to build a model for e-commerce data that summarize large amount of customer reviews of a 
 product to give an overview about the product. The result of this model can be used to get an overview of what are the 
-most important reveiws that many customers complaining or praising about a particular product without reading all of 
-the reviews.</p>
+most important reviews that many customers complaining or praising about a particular product without reading all of 
+the reviews. The main tasks involved in this project are data collection, data cleaning, implementation of two 
+summarization algorithms and getting the final summary in Apache Spark.</p>
 
 <h2>
 <a id="dataset" class="anchor" href="#dataset" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dataset</h2>
@@ -85,7 +87,7 @@ the <a href="https://github.com/iamprem/customer-review-crawler/commits/cloud">c
 <pre><code>review_id       -   Unique id given to a review
 ratings         -   Integer value ranges from 1 to 5, describes rating of the product
 review_title    -   Punch line given by the reviewer for their review
-helpful_votes   -   Number of people found the review was helpful
+helpful_votes   -   Number of people found the review was helpful(upvoted)
 total_votes     -   Number of people upvoted or downvoted the review
 full_reveiw     -   Full review given by the reviewer
 </code></pre>
@@ -155,19 +157,19 @@ sentences after performing the summarization techniques.</li>
 <a id="latent-semantic-analysis" class="anchor" href="#latent-semantic-analysis" aria-hidden="true"><span class="octicon octicon-link"></span></a>Latent Semantic Analysis</h3>
 
 <p>After preparing the data as mentioned above, full <code>vocabulary/rowheader</code> of the review file is obtained from the 
-<code>values()</code> of wordlistRDD and sentence_ids/columnheader from the <code>keys()</code> of wordlistRDD. From the wordlist obtained by data
+<code>values()</code> of wordlistRDD and <code>sentence_ids/columnheader</code> from the <code>keys()</code> of wordlistRDD. From the wordlist obtained by data
 preparation, term-frequency vector for each selected sentence is computed and then using the term-frequency matrix
-the document-frequency(here document means sentences in the review file) vector is computed. Inverse Document Frequency
-is then computed using the document-frequency vector and total number of sentences. TF-IDF matrix with words as rows and
-sentences as columns. </p>
+the document-frequency( <em>here document means sentences in the review file</em>) vector is computed. Inverse Document Frequency
+is then computed using the document-frequency vector and total number of sentences. TF-IDF matrix is computed by multiplying 
+TF matrix with IDF vector using numpy. Here the rows and columns of the TF-IDF matrix are words and sentences respectively.</p>
 
-<p>After computing the TF-IDF matrix, factorized the matrix by Singular Value Decomposition (using numpy) and collected the key
+<p>After computing the TF-IDF matrix, factorized the matrix by <strong><em>Singular Value Decomposition</em></strong> (using numpy) and collected the key
 sentences from the right singular matrix. The matrix decomposition resulted three matrices U, S and V-Transpose. U is the left
 singular vector matrix, S is the diagonal matrix of non-negative singular values sorted in descending order and V-Transpose is the
 right singular vector matrix. Latent Semantic Analysis summarization method chooses k concepts from the right singular matrix
 and in each concept(row vector in V-Transpose) selects the sentence with largest value to the summary. This method is 
 suitable when we know the number of topics/concepts in a given corpus of documents. <strong><em>But in the review summarization task,
-since there is no predefined set of concepts, i've chosen 10 concepts with 5 sentences each. So the concepts 
+since there is no predefined set of concepts, i've chosen 10 concepts with top 5 sentences each. So the concepts 
 captured by LSA in final review can be interpreted clearly.</em></strong></p>
 
 <h4>
@@ -210,21 +212,20 @@ from the right singular vector matrix. Here,</p>
 <p><strong>Note:</strong> Few concepts showed redundant information, so selected only three concepts from the full result to show a sample 
 of the output</p>
 
-<p>We can use LSA to get the important words instead of sentences by doing SVD on transpose matrix of tf-idf matrix. I've added
-instruction below to choose between words/sentences while executing the program.</p>
+<p><strong>We can use LSA to get the important words instead of sentences by doing SVD on transpose matrix of tf-idf matrix. I've added
+instruction below to choose between words/sentences while executing the program.</strong></p>
 
 <h3>
 <a id="textrank" class="anchor" href="#textrank" aria-hidden="true"><span class="octicon octicon-link"></span></a>TextRank</h3>
 
-<p>TextRank is a graph based summarization algorithm and this starts with the same data preparation steps as LSA till 
+<p>TextRank is a <em>graph based summarization algorithm</em> and this starts with the same data preparation steps as LSA till 
 producing the wordlistRDD. Here each wordlist represent a vertex of the graph. To add edges to the vertices, i've 
 created graphRDD which takes wordlist(vertex) and all other vertices(all sentences from wordlistRDD) as input and creates 
 adjacency list of the vertex based on the similarity between itself to all other sentences(vertices). If two vertices don't share any 
-words then there won't be an edge between them and if 
-they share some common words, then the edge between them will have a weight equivalent to the similarity between them.
-The similarity score is computed by the below formula.<br>
+words then there won't be an edge between them and if they share some common words, then the edge between them will 
+have a weight equivalent to the similarity between them. <em>The similarity score is computed by the below formula</em>.<br>
 <img src="https://raw.githubusercontent.com/iamprem/temp/master/assets/sim_form.png" alt="similarity formula"><br>
-<strong>Note: I've added a smoothing factor of 1 in the denominator to avoid divide by zero case.</strong></p>
+<strong><em>Note: In my implementation, I've added a smoothing factor of 1 in the denominator to avoid divide by zero case.</em></strong></p>
 
 <p>After constructing the graph, implemented the TextRank(modified version of PageRank) iterative algorithm to compute
 the rank of each vertex. The top ‘k’ ranked sentences are then selected and added to the final summary of the reviews.
@@ -261,7 +262,7 @@ Rank: 2.0988    Sentence : [u' I am an Amazon user and fan but I was sadly let d
 </code></pre>
 
 <h2>
-<a id="demos" class="anchor" href="#demos" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demos</h2>
+<a id="demo" class="anchor" href="#demo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demo</h2>
 
 <h4>
 <a id="lsa-in-action" class="anchor" href="#lsa-in-action" aria-hidden="true"><span class="octicon octicon-link"></span></a>LSA in Action</h4>
@@ -275,6 +276,31 @@ concept.</strong>
 <a id="textrank-in-action" class="anchor" href="#textrank-in-action" aria-hidden="true"><span class="octicon octicon-link"></span></a>TextRank in Action</h4>
 
 <p><img src="https://raw.githubusercontent.com/iamprem/temp/master/assets/tr_exe.gif" alt="Summary sentences using TextRank">  </p>
+
+<h2>
+<a id="observations" class="anchor" href="#observations" aria-hidden="true"><span class="octicon octicon-link"></span></a>Observations</h2>
+
+<ul>
+<li>Initially i tried running LSA on all sentences(without filtereing 30). It surprisingly resulted sentences 
+with very few words in the first concept which didn't give any meaning at all.</li>
+<li>Then i picked sentences with words more than 10 words, this resulted with same long sentences appearing in multiple 
+concepts(or rows) because longer sentences have more words and that can represent multiple concepts.</li>
+<li>Negative reviews are mostly user specific, so they didn't show up much in the top concepts. Also the negative reviews
+are comparatively very less in number than positive reviews.</li>
+<li>Text rank is pretty stable in this and always prefers sentences with more words and have more edges.</li>
+<li>TextRank and LSA are not so good choice for text summarization, but these can be used as a step 1 for summarization 
+task.</li>
+</ul>
+
+<h2>
+<a id="evaluation" class="anchor" href="#evaluation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Evaluation</h2>
+
+<ul>
+<li>Since the evaluation of the text summary involves comparing many human written summaries with the machine generated 
+summary by checking unigram co-occurrences, i've not evaluated these two methods. </li>
+<li>Also the commonly used tool for evaluating summary '<a href="http://www.berouge.com/">ROUGE</a>' was written in Perl script and 
+limited time didn't allow me to explore the usage of the tool for this task.</li>
+</ul>
 
 <h2>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
@@ -293,20 +319,18 @@ concept.</strong>
 <h4>
 <a id="install-numpy-and-nltk" class="anchor" href="#install-numpy-and-nltk" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install Numpy and NLTK</h4>
 
-<pre><code>sudo pip install -U numpy
-sudo pip install -U nltk
-</code></pre>
+<div class="highlight highlight-source-shell"><pre>sudo pip install -U numpy
+sudo pip install -U nltk</pre></div>
 
 <h4>
 <a id="download-stopwords-from-nltk-data-source" class="anchor" href="#download-stopwords-from-nltk-data-source" aria-hidden="true"><span class="octicon octicon-link"></span></a>Download Stopwords from nltk data source</h4>
 
-<pre><code> //Pythonic way
- import nltk
- nltk.download('all-corpora')
-        (or)
- //Command line way       
- python -m nltk.downloader all-corpora
-</code></pre>
+<div class="highlight highlight-source-python"><pre> <span class="pl-c">#Pythonic way</span>
+ <span class="pl-k">import</span> nltk
+ nltk.download(<span class="pl-s"><span class="pl-pds">'</span>all-corpora<span class="pl-pds">'</span></span>)
+     (<span class="pl-k">or</span>)
+ <span class="pl-c">#Command line way       </span>
+ python <span class="pl-k">-</span>m nltk.downloader <span class="pl-c1">all</span><span class="pl-k">-</span>corpora</pre></div>
 
 <h3>
 <a id="execution-instruction" class="anchor" href="#execution-instruction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Execution Instruction</h3>
@@ -314,14 +338,42 @@ sudo pip install -U nltk
 <h4>
 <a id="summarization-using-lsa" class="anchor" href="#summarization-using-lsa" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summarization using LSA</h4>
 
-<pre><code>spark-submit lsa.py -s &lt;inputfile&gt;
+<pre><code>$ spark-submit lsa.py -s &lt;inputfile&gt;
+    (or)
+$ spark-submit lsa.py -w &lt;inputfile&gt;
+
+Note: -s and -w flag returns 'review key sentences' and review 'key words' respectively.
+Example:
+    $ spark-submit lsa.py -s hdfs-path-/dataset/reviews/B00HWMPSK6.txt
 </code></pre>
 
 <h4>
 <a id="summarization-using-textrank" class="anchor" href="#summarization-using-textrank" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summarization using TextRank</h4>
 
-<pre><code>spark-submit textrank.py &lt;iter-count&gt; &lt;summary-sent-count&gt; &lt;inputfile&gt;
+<pre><code>$ spark-submit textrank.py &lt;iter-count&gt; &lt;summary-sent-count&gt; &lt;inputfile&gt;
+
+Iter-count  -   No of iterations for textrank algorithm. 10 iterations give results close to converged state
+summary-sent-count - No of summary sentences as the final result.
+
+Example: 
+    $ spark-submit textrank.py 10 10 hdfs-path/data/reviews/B00HWMPSK6.txt
 </code></pre>
+
+<h4>
+<a id="output-interpretation" class="anchor" href="#output-interpretation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Output Interpretation</h4>
+
+<p>Outputs of the above execution will be saved to a text file in the following directory as well as 
+printed on the console(Disable logs to get clear output).</p>
+
+<pre><code>yourHDFShome/output-lsa/
+yourHDFShome/output-textrank/
+
+Example:
+    $ hadoop fs -cat output-lsa/*
+    $ hadoop fs -cat output-textrank/*
+</code></pre>
+
+<p>Note: Delete the output folders if you would like to check again with different input file.        </p>
 
 <h2>
 <a id="references" class="anchor" href="#references" aria-hidden="true"><span class="octicon octicon-link"></span></a>References</h2>
@@ -329,10 +381,10 @@ sudo pip install -U nltk
 <ol>
 <li>Y. Gong and X. Liu. 2001. Generic text summarization using relevance measure and latent
 semantic analysis. In Proceedings of SIGIR.</li>
+<li>Makbule Gulcin Ozsoy, Ferda Nur Alpaslan and Ilyas Cicekli. Text summarization using Latent Semantic Analysis</li>
+<li>Josef Steinberger and Karel Ježek. Using Latent Semantic Analysis in Text Summarization and Summary Evaluation</li>
 <li>R. Mihalcea and P. Tarau. TextRank - bringing order into texts. In Proceedings of the Conference
 on Empirical Methods in Natural Language Processing (EMNLP 2004), Barcelona, Spain, 2004.</li>
-<li>G. Erkan and D. R. Radev (2004) "LexRank: Graph-based Lexical Centrality as Salience in Text
-Summarization", Volume 22, pages 457-479</li>
 </ol>
 
       <footer class="site-footer">
