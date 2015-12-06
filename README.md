@@ -1,4 +1,4 @@
-# Summarizer - Summarize Product Reviews
+# Product Reviews Summarizer
 
 ## Table of Contents
  - [Introduction](#introduction)
@@ -285,6 +285,10 @@ printed on the console(Disable logs to get clear output).
         $ hadoop fs -cat output-textrank/*
 Note: Delete the output folders if you would like to check again with different input file.        
     
+## Source Code
+
+***Not available for now***
+
 ## References
 1. Y. Gong and X. Liu. 2001. Generic text summarization using relevance measure and latent
 semantic analysis. In Proceedings of SIGIR.

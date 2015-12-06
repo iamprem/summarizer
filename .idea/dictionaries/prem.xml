@@ -3,9 +3,11 @@
     <words>
       <w>columnheader</w>
       <w>dataset</w>
+      <w>hancom</w>
       <w>lemmatize</w>
       <w>rowheader</w>
       <w>summarization</w>
+      <w>unigram</w>
       <w>wordlist</w>
     </words>
   </dictionary>
