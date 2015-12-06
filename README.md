@@ -1,4 +1,4 @@
-# Product Reviews Summarizer
+# Product Review Summarizer
 
 ## Table of Contents
  - [Introduction](#introduction)
