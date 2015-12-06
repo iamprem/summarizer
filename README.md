@@ -9,6 +9,7 @@
     - [Latent Semantic Analysis](#latent-semantic-analysis)
     - [Text Rank](#textrank)
  - [Demo](#demo)
+ - [Evaluation](#evaluation)
  - [Installation](#installation)
  - [Execution Instruction](#execution-instruction)
  - [Source Code](#source-code)
@@ -217,6 +218,13 @@ are comparatively very less in number than positive reviews.
 * TextRank and LSA are not so good choice for text summarization, but these can be used as a step 1 for summarization 
 task.
 
+## Evaluation
+
+* Since the evaluation of the text summary involves comparing many human written summaries with the machine generated 
+summary by checking n-grams similarity, i've not evaluated these two methods. 
+* Also the commonly used tool for evaluating summary '[ROUGE](http://www.berouge.com/)' was written in Perl script and 
+limited time didn't allow me to explore the usage of the tool for this task.
+
 ## Installation
 
 ### Dependencies
@@ -282,5 +290,7 @@ Note: Delete the output folders if you would like to check again with different 
 ## References
 1. Y. Gong and X. Liu. 2001. Generic text summarization using relevance measure and latent
 semantic analysis. In Proceedings of SIGIR.
-2. R. Mihalcea and P. Tarau. TextRank - bringing order into texts. In Proceedings of the Conference
+2. Makbule Gulcin Ozsoy, Ferda Nur Alpaslan and Ilyas Cicekli. Text summarization using Latent Semantic Analysis
+3. Josef Steinberger and Karel Ježek. Using Latent Semantic Analysis in Text Summarization and Summary Evaluation
+4. R. Mihalcea and P. Tarau. TextRank - bringing order into texts. In Proceedings of the Conference
 on Empirical Methods in Natural Language Processing (EMNLP 2004), Barcelona, Spain, 2004.
