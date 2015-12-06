@@ -235,15 +235,39 @@ sudo pip install -U nltk
 ### Execution Instruction
 
 #### Summarization using LSA
-    spark-submit lsa.py -s <inputfile>
+    $ spark-submit lsa.py -s <inputfile>
+        (or)
+    $ spark-submit lsa.py -w <inputfile>
+    
+    Note: -s and -w flag returns 'review key sentences' and review 'key words' respectively.
+    Example:
+        $ spark-submit lsa.py -s hdfs-path-/dataset/reviews/B00HWMPSK6.txt
 
 #### Summarization using TextRank
-    spark-submit textrank.py <iter-count> <summary-sent-count> <inputfile>
+    
+    $ spark-submit textrank.py <iter-count> <summary-sent-count> <inputfile>
+    
+    Iter-count  -   No of iterations for textrank algorithm. 10 iterations give results close to converged state
+    summary-sent-count - No of summary sentences as the final result.
+    
+    Example: 
+        $ spark-submit textrank.py 10 10 hdfs-path/data/reviews/B00HWMPSK6.txt
+        
+#### Output Interpretation
+
+Outputs of the above execution will be saved to a text file in the following directory as well as 
+printed on the console(Disable logs to get clear output).
+
+    yourHDFShome/output-lsa/
+    yourHDFShome/output-textrank/
+
+    Example:
+        $ hadoop fs -cat output-lsa/*
+        $ hadoop fs -cat output-textrank/*
+Note: Delete the output folders if you would like to check again with different input file.        
     
 ## References
 1. Y. Gong and X. Liu. 2001. Generic text summarization using relevance measure and latent
 semantic analysis. In Proceedings of SIGIR.
 2. R. Mihalcea and P. Tarau. TextRank - bringing order into texts. In Proceedings of the Conference
 on Empirical Methods in Natural Language Processing (EMNLP 2004), Barcelona, Spain, 2004.
-3. G. Erkan and D. R. Radev (2004) "LexRank: Graph-based Lexical Centrality as Salience in Text
-Summarization", Volume 22, pages 457-479
