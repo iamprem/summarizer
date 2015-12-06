@@ -221,7 +221,7 @@ task.
 ## Evaluation
 
 * Since the evaluation of the text summary involves comparing many human written summaries with the machine generated 
-summary by checking n-grams similarity, i've not evaluated these two methods. 
+summary by checking unigram co-occurrences, i've not evaluated these two methods. 
 * Also the commonly used tool for evaluating summary '[ROUGE](http://www.berouge.com/)' was written in Perl script and 
 limited time didn't allow me to explore the usage of the tool for this task.
 
