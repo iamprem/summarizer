@@ -13,7 +13,9 @@
     <section class="page-header">
       <h1 class="project-name">Product Review Summarizer</h1>
       <h2 class="project-tagline">Text Summarization using LSA and TextRank in Apache Spark</h2>
-      <h2 class="project-tagline">Prem Kumar Murugesan (pmuruges@uncc.edu)</h2>
+      <a href="https://github.com/iamprem/summarizer" class="btn">View on GitHub</a>
+      <a href="https://github.com/iamprem/summarizer/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/iamprem/summarizer/tarball/master" class="btn">Download .tar.gz</a>
     </section>
 
     <section class="main-content">
@@ -46,7 +48,7 @@
 <li><a href="#installation">Installation</a></li>
 <li><a href="#execution-instruction">Execution Instruction</a></li>
 <li><a href="#source-code">Source Code</a></li>
-<li><a href="#reference">Reference</a></li>
+<li><a href="#references">References</a></li>
 </ul>
 
 <h2>
@@ -178,28 +180,28 @@ from the right singular vector matrix. Here,</p>
 
 <ul>
 <li>
-<strong>Concept 1</strong> clearly shows the positive feedback about Hancom Office that comes with this tablet</li>
+<strong>Concept X</strong> clearly shows the positive feedback about Hancom Office that comes with this tablet</li>
 <li>
-<strong>Concept 2</strong> describes about the screen of the tablet</li>
+<strong>Concept Y</strong> describes about the screen of the tablet</li>
 <li>
-<strong>Concept 3</strong> Captured sentences that described the keyboard and battery performance</li>
+<strong>Concept Z</strong> Captured sentences that described the keyboard and battery performance</li>
 </ul>
 
-<pre><code>    Concept 1
+<pre><code>    Concept X
     [Sentence 1] :  [u" Combined with any Bluetooth Keyboard and the Hancom Officer suite (it's free!), it's almost exactly like your Microsoft Office at home"]
     [Sentence 2] :  [u'2 is first and foremost a pseudo-laptop replacement computer, especially when you have specialized office apps like the (full version of) Hancom Office']
     [Sentence 3] :  [u' - The Hancom office app is only a viewer, but you can use OfficeSuite, WPS Office or QuickOfficeHD to have a near 95% Microsoft compatible experience']
     [Sentence 4] :  [u' The Hancom office is very useful, I now have no need to get Microsoft Office 2013 for my laptop']
     [Sentence 5] :  [u' Samsungs free office suite is just like working with Microsoft office']
 
-    Concept 2
+    Concept Y
     [Sentence 1] :  [u' Pros: Large screen Fast computing processing speeds / large amount of Ram Beautiful looking screen with large resolution Easy setup with secure packaging Highly customizable with smooth operation']
     [Sentence 2] :  [u'2: 1) the large screen allows for effective split window use; 2) the large screen is great for reading technical textbooks']
     [Sentence 3] :  [u" Apps do not transition well from full screen to partial screen, and most are nearly useless in quarter-screen, so don't put too much faith in that multi-app functionality"]
     [Sentence 4] :  [u" The stylus is incredibly useful to write notes and the fact that the screen is so large really makes you feel like you're just using an actual notepad"]
     [Sentence 5] :  [u' Second, the on-screen keyboard keeps popping up! The BT keyboard is connected and working, but any pen-clicking on the screen slides up the on-screen keyboard as well']
 
-    Concept 3
+    Concept Z
     [Sentence 1] :  [u' Battery life: At first average battery life between charges was about four hours']
     [Sentence 2] :  [u" I've read however that those using the Logitech Bluetooth keyboard are now experiencing issues with their Logitech keyboards after updating to lollipop"]
     [Sentence 3] :  [u' Second, the on-screen keyboard keeps popping up! The BT keyboard is connected and working, but any pen-clicking on the screen slides up the on-screen keyboard as well']
@@ -207,8 +209,8 @@ from the right singular vector matrix. Here,</p>
     [Sentence 5] :  [u" - Battery life and charging times could be better if you're used to an older Transformer that had a battery in the keyboard dock"]    
 </code></pre>
 
-<p><strong>Note:</strong> Few concepts showed redundant information, so selected only three concepts from the full result to show a sample 
-of the output</p>
+<p><strong>Note:</strong> Few concepts showed redundant information, so selected only three concepts randomly(without following any order) for this example.
+Here X,Y and Z represents 5th, 3rd and 7th concepts respectively in the actual output.</p>
 
 <p><strong>We can use LSA to get the important words instead of sentences by doing SVD on transpose matrix of tf-idf matrix. I've added
 instruction below to choose between words/sentences while executing the program.</strong></p>
@@ -262,11 +264,13 @@ Rank: 2.0988    Sentence : [u' I am an Amazon user and fan but I was sadly let d
 <h2>
 <a id="demo" class="anchor" href="#demo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demo</h2>
 
+<p>Tip: I used a tool called  <strong><a href="http://askubuntu.com/questions/107726/how-to-create-animated-gif-images-of-a-screencast">Byzanz</a></strong>
+to record the following GIFs</p>
+
 <h4>
 <a id="lsa-in-action" class="anchor" href="#lsa-in-action" aria-hidden="true"><span class="octicon octicon-link"></span></a>LSA in Action</h4>
 
-<p>Summarization using Latent Semantic Analysis is shown below. Here for simplicity only two concepts are
-selected and in each concept five sentences are extracted. <strong>Note the similarity between sentences in each
+<p>Summarization using Latent Semantic Analysis is shown below. <strong>Note the similarity between sentences in each
 concept.</strong>
 <img src="https://raw.githubusercontent.com/iamprem/temp/master/assets/lsa_exe.gif" alt="Summarization using LSA">  </p>
 
@@ -279,7 +283,7 @@ concept.</strong>
 <a id="observations" class="anchor" href="#observations" aria-hidden="true"><span class="octicon octicon-link"></span></a>Observations</h2>
 
 <ul>
-<li>Initially i tried running LSA on all sentences(without filtering 30). It surprisingly resulted sentences 
+<li>Initially i tried running LSA on all sentences(without filtering &gt;30 and &lt;10). It surprisingly resulted sentences 
 with very few words in the first concept which didn't give any meaning at all.</li>
 <li>Then i picked sentences with words more than 10 words, this resulted with same long sentences appearing in multiple 
 concepts(or rows) because longer sentences have more words and that can represent multiple concepts.</li>
@@ -382,10 +386,13 @@ Example:
 <a id="references" class="anchor" href="#references" aria-hidden="true"><span class="octicon octicon-link"></span></a>References</h2>
 
 <ol>
-<li>Y. Gong and X. Liu. 2001. Generic text summarization using relevance measure and latent
-semantic analysis. In Proceedings of SIGIR.</li>
-<li>Makbule Gulcin Ozsoy, Ferda Nur Alpaslan and Ilyas Cicekli. Text summarization using Latent Semantic Analysis</li>
-<li>Josef Steinberger and Karel Ježek. Using Latent Semantic Analysis in Text Summarization and Summary Evaluation</li>
+<li>Y. Gong, X. Liu: Generic Text Summarization Using Relevance Measure and Latent Semantic
+Analysis. Proceedings of the 24 th annual international ACM SIGIR conference on Research and
+development in information retrieval, New Orleans, Louisiana, United States 2001, pp. 19-25</li>
+<li>Makbule Gulcin Ozsoy, Ferda Nur Alpaslan and Ilyas Cicekli. Text summarization using Latent Semantic Analysis.
+Journal of Information Science archive, Volume 37 Issue 4, August 2011, Pages 405-417.</li>
+<li>Josef Steinberger and Karel Ježek. Using Latent Semantic Analysis in Text Summarization and Summary Evaluation(2004),
+In Proc. ISIM ’04.</li>
 <li>R. Mihalcea and P. Tarau. TextRank - bringing order into texts. In Proceedings of the Conference
 on Empirical Methods in Natural Language Processing (EMNLP 2004), Barcelona, Spain, 2004.</li>
 </ol>
