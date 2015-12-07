@@ -13,7 +13,7 @@
  - [Installation](#installation)
  - [Execution Instruction](#execution-instruction)
  - [Source Code](#source-code)
- - [Reference](#reference)
+ - [References](#references)
 
 ## Introduction
 The idea of this project is to build a model for e-commerce data that summarize large amount of customer reviews of a 
@@ -118,34 +118,34 @@ captured by LSA in final review can be interpreted clearly.***
 The following is the sample output which contains 5 sentences on each concept/topic in the review. There are obtained 
 from the right singular vector matrix. Here,
 
-* **Concept 1** clearly shows the positive feedback about Hancom Office that comes with this tablet
-* **Concept 2** describes about the screen of the tablet
-* **Concept 3** Captured sentences that described the keyboard and battery performance
+* **Concept X** clearly shows the positive feedback about Hancom Office that comes with this tablet
+* **Concept Y** describes about the screen of the tablet
+* **Concept Z** Captured sentences that described the keyboard and battery performance
 
 ```
-    Concept 1
+    Concept X
     [Sentence 1] :	[u" Combined with any Bluetooth Keyboard and the Hancom Officer suite (it's free!), it's almost exactly like your Microsoft Office at home"]
     [Sentence 2] :	[u'2 is first and foremost a pseudo-laptop replacement computer, especially when you have specialized office apps like the (full version of) Hancom Office']
     [Sentence 3] :	[u' - The Hancom office app is only a viewer, but you can use OfficeSuite, WPS Office or QuickOfficeHD to have a near 95% Microsoft compatible experience']
     [Sentence 4] :	[u' The Hancom office is very useful, I now have no need to get Microsoft Office 2013 for my laptop']
     [Sentence 5] :	[u' Samsungs free office suite is just like working with Microsoft office']
     
-    Concept 2
+    Concept Y
     [Sentence 1] :	[u' Pros: Large screen Fast computing processing speeds / large amount of Ram Beautiful looking screen with large resolution Easy setup with secure packaging Highly customizable with smooth operation']
     [Sentence 2] :	[u'2: 1) the large screen allows for effective split window use; 2) the large screen is great for reading technical textbooks']
     [Sentence 3] :	[u" Apps do not transition well from full screen to partial screen, and most are nearly useless in quarter-screen, so don't put too much faith in that multi-app functionality"]
     [Sentence 4] :	[u" The stylus is incredibly useful to write notes and the fact that the screen is so large really makes you feel like you're just using an actual notepad"]
     [Sentence 5] :	[u' Second, the on-screen keyboard keeps popping up! The BT keyboard is connected and working, but any pen-clicking on the screen slides up the on-screen keyboard as well']
     
-    Concept 3
+    Concept Z
     [Sentence 1] :	[u' Battery life: At first average battery life between charges was about four hours']
     [Sentence 2] :	[u" I've read however that those using the Logitech Bluetooth keyboard are now experiencing issues with their Logitech keyboards after updating to lollipop"]
     [Sentence 3] :	[u' Second, the on-screen keyboard keeps popping up! The BT keyboard is connected and working, but any pen-clicking on the screen slides up the on-screen keyboard as well']
     [Sentence 4] :	[u' Now my Logitech Pro keyboard no longer works and the Samsung screen keyboard works randomly']
     [Sentence 5] :	[u" - Battery life and charging times could be better if you're used to an older Transformer that had a battery in the keyboard dock"]    
 ```
-**Note:** Few concepts showed redundant information, so selected only three concepts from the full result to show a sample 
-of the output
+**Note:** Few concepts showed redundant information, so selected only three concepts randomly(without following any order) for this example.
+Here X,Y and Z represents 5th, 3rd and 7th concepts respectively in the actual output.
     
 **We can use LSA to get the important words instead of sentences by doing SVD on transpose matrix of tf-idf matrix. I've added
 instruction below to choose between words/sentences while executing the program.**
@@ -195,9 +195,11 @@ The TextRank algorithm is formulated from PageRank and the mathematical expressi
 
 ##Demo
 
+Tip: I used a tool called  **[Byzanz](http://askubuntu.com/questions/107726/how-to-create-animated-gif-images-of-a-screencast)**
+to record the following GIFs
+
 #### LSA in Action
-Summarization using Latent Semantic Analysis is shown below. Here for simplicity only two concepts are
-selected and in each concept five sentences are extracted. **Note the similarity between sentences in each
+Summarization using Latent Semantic Analysis is shown below. **Note the similarity between sentences in each
 concept.**
 ![Summarization using LSA](https://raw.githubusercontent.com/iamprem/temp/master/assets/lsa_exe.gif)  
 
@@ -206,7 +208,7 @@ concept.**
 
 ## Observations
 
-* Initially i tried running LSA on all sentences(without filtering <10 and >30). It surprisingly resulted sentences 
+* Initially i tried running LSA on all sentences(without filtering >30 and <10). It surprisingly resulted sentences 
 with very few words in the first concept which didn't give any meaning at all.
 * Then i picked sentences with words more than 10 words, this resulted with same long sentences appearing in multiple 
 concepts(or rows) because longer sentences have more words and that can represent multiple concepts.
@@ -290,9 +292,12 @@ Note: Delete the output folders if you would like to check again with different 
 ***Not available for now***
 
 ## References
-1. Y. Gong and X. Liu. 2001. Generic text summarization using relevance measure and latent
-semantic analysis. In Proceedings of SIGIR.
-2. Makbule Gulcin Ozsoy, Ferda Nur Alpaslan and Ilyas Cicekli. Text summarization using Latent Semantic Analysis
-3. Josef Steinberger and Karel Ježek. Using Latent Semantic Analysis in Text Summarization and Summary Evaluation
+1. Y. Gong, X. Liu: Generic Text Summarization Using Relevance Measure and Latent Semantic
+   Analysis. Proceedings of the 24 th annual international ACM SIGIR conference on Research and
+   development in information retrieval, New Orleans, Louisiana, United States 2001, pp. 19-25
+2. Makbule Gulcin Ozsoy, Ferda Nur Alpaslan and Ilyas Cicekli. Text summarization using Latent Semantic Analysis.
+   Journal of Information Science archive, Volume 37 Issue 4, August 2011, Pages 405-417.
+3. Josef Steinberger and Karel Ježek. Using Latent Semantic Analysis in Text Summarization and Summary Evaluation(2004),
+   In Proc. ISIM ’04.
 4. R. Mihalcea and P. Tarau. TextRank - bringing order into texts. In Proceedings of the Conference
 on Empirical Methods in Natural Language Processing (EMNLP 2004), Barcelona, Spain, 2004.
